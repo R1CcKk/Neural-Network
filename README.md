@@ -21,15 +21,17 @@ Epoch 8/10 - Accuracy: 99.4383%
 Epoch 9/10 - Accuracy: 99.585%
 Epoch 10/10 - Accuracy: 99.7167%
 
-mnist_test.csv
+mnist_test.csv (solo forw, no back & update)
 
-Epoch 1/10 - Accuracy: 88.1%
-Epoch 2/10 - Accuracy: 94.43%
-Epoch 3/10 - Accuracy: 96.48%
-Epoch 4/10 - Accuracy: 97.58%
-Epoch 5/10 - Accuracy: 98.38%
-Epoch 6/10 - Accuracy: 99.01%
-Epoch 7/10 - Accuracy: 99.45%
-Epoch 8/10 - Accuracy: 99.6%
-Epoch 9/10 - Accuracy: 99.8%
-Epoch 10/10 - Accuracy: 99.87%
+60000 examples
+epochs = 5 & learning rate = 0.01
+
+Epoch 1 Training Accuracy: 94.1017%
+Epoch 2 Training Accuracy: 97.34%
+Epoch 3 Training Accuracy: 98.0883%
+Epoch 4 Training Accuracy: 98.5683%
+Epoch 5 Training Accuracy: 98.8967%
+
+10000 examples (final test)
+
+FINAL TEST ACCURACY: 97.58%
