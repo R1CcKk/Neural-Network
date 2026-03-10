@@ -27,6 +27,22 @@ Trained on 60,000 images for 5 epochs:
 - `DataLoader.hpp`: Handles MNIST CSV parsing and data normalization.
 - `Activations.hpp`: ReLU, Sigmoid, and Softmax functions.
 
+## Performance & Optimization Notes
+
+This implementation focuses on CPU efficiency and memory hierarchy awareness.
+
+### 1. Cache Locality & Memory Layout
+Unlike a naive implementation using nested vectors (`std::vector<std::vector<double>>`), this project uses a **1.5D approach**:
+* All matrices are stored as a **single contiguous block of memory** (1D `std::vector`).
+* This layout ensures that when the CPU fetches a value, the subsequent values are likely already in the **L1/L2 Cache**, drastically reducing **cache misses**.
+
+
+
+### 2. Matrix Multiplication Optimization
+The core GEMM (General Matrix Multiply) operations are implemented using the **`ikj` loop order**. 
+* Standard `ijk` multiplication causes non-sequential memory access in the second matrix.
+* The `ikj` variant allows for **stride-1 access patterns**, which is significantly more friendly to the CPU's prefetcher.
+
 ## How to build and run
 Compile using any C++11 compliant compiler with `-O3` optimization for best performance:
 
