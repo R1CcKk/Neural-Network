@@ -1,6 +1,6 @@
-#include "NeuralNetwork.hpp"
-#include "Activations.hpp"
-#include "Matrix.hpp"
+#include "../include/NeuralNetwork.hpp"
+#include "../include/Activations.hpp"
+#include "../include/Matrix.hpp"
 #include <random>
 
 NeuralNetwork::NeuralNetwork(const std::vector<int> &topology) : m_topology(topology)
