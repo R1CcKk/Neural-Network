@@ -8,8 +8,7 @@ namespace Activation
 {
 
     // --- ReLU (Rectified Linear Unit) ---
-    // Standard activation for hidden layers. Avoids the vanishing gradient
-    // problem commonly associated with saturating functions like Sigmoid or Tanh.
+    // Standard activation for hidden layers.
     inline double relu(double x)
     {
         return (x > 0) ? x : 0.0;
