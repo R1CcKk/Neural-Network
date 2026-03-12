@@ -56,7 +56,7 @@ The model is trained and evaluated using the **MNIST** (Modified National Instit
 
 ### Source
 The official dataset can be found at:
-* **Official Website**: [yann.lecun.com/exdb/mnist/](http://yann.lecun.com/exdb/mnist/)
+* **Kaggle Website**: [https://www.kaggle.com/datasets/hojjatk/mnist-dataset)
 * **Alternative Mirror (OpenML)**: [mnist_784](https://www.openml.org/d/554)
 
 ### Data Specifications
