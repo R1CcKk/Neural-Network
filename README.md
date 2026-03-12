@@ -49,3 +49,24 @@ Compile using any C++11 compliant compiler with `-O3` optimization for best perf
 ```bash
 g++ -O3 Train_main.cpp NeuralNetwork.cpp -o train_mnist
 ./train_mnist
+```
+
+## Dataset
+The model is trained and evaluated using the **MNIST** (Modified National Institute of Standards and Technology) database of handwritten digits.
+
+### Source
+The official dataset can be found at:
+* **Official Website**: [yann.lecun.com/exdb/mnist/](http://yann.lecun.com/exdb/mnist/)
+* **Alternative Mirror (OpenML)**: [mnist_784](https://www.openml.org/d/554)
+
+### Data Specifications
+* **Training Set**: 60,000 images
+* **Test Set**: 10,000 images
+* **Image Size**: 28x28 pixels (grayscale)
+* **Label Format**: Integer (0-9)
+
+### Data Preprocessing
+To ensure optimal performance and avoid vanishing gradients during the backpropagation:
+1.  **Flattening**: Each 28x28 matrix is converted into a $1 \times 784$ vector.
+2.  **Normalization**: Pixel values are scaled from $[0, 255]$ to $[0, 1]$ using:
+    $$x_{norm} = \frac{x}{255.0}$$
