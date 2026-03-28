@@ -1,0 +1,65 @@
+# --- BINARIES AND EXECUTABLES ---
+[Mm]ain_app
+*.out
+*.app
+*.exe
+*.o
+*.obj
+*.a
+*.la
+*.lo
+*.so
+*.dylib
+matrix_bench
+
+# --- BUILD AND OUTPUT DIRECTORIES ---
+output/
+bin/
+obj/
+build/
+dist/
+Debug/
+Release/
+x64/
+x86/
+
+# --- SYSTEM FILES ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# --- IDE AND EDITORS ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.clangd/
+.cache/
+*.user
+*.sublime-project
+*.sublime-workspace
+
+# --- EXTERNAL LIBRARIES AND LOGS ---
+*.log
+*.tmp
+node_modules/
+vendor/
+
+# Executables
+train_mnist
+test_mnist
+reteNeurale
+
+# --- DATA AND MODELS ---
+*.csv
+*.bin
+src/*.csv
+src/*.bin
+*.dat
+data/
+models/
