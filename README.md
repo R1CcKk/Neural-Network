@@ -3,25 +3,28 @@
 This project implements a Feedforward Neural Network (Multilayer Perceptron) to classify handwritten digits from the MNIST dataset. The entire engine is written in pure C++ without any external machine learning libraries.
 
 ## Technical Highlights
+
 - **Cache-Friendly Linear Algebra**: Used a custom Matrix class with 1D array storage to ensure contiguous memory access. Matrix multiplication is optimized using an `ikj` loop order to minimize CPU cache misses.
 - **Custom Binary Serialization**: Implemented a raw binary format for saving and loading the model, bypassing the overhead of CSV/text parsing.
 - **Numerical Stability**: Included a Softmax implementation with a max-subtraction trick to prevent floating-point overflow.
 - **Modular Design**: Separated data loading, mathematical operations, and network logic into distinct modules.
 
 ## Model Architecture
+
 - **Input Layer**: 784 neurons (28x28 pixels).
 - **Hidden Layer**: 128 neurons with **ReLU** activation.
 - **Output Layer**: 10 neurons with **Softmax** activation (representing digits 0-9).
 - **Optimization**: Stochastic Gradient Descent (SGD) with Xavier Initialization.
 
-
-
 ## Performance
+
 Trained on 60,000 images for 5 epochs:
+
 - **Final Training Accuracy**: 98.88%
 - **Final Test Accuracy (Inference)**: 97.65%
 
 ## Project Structure
+
 - `Matrix.hpp`: Core linear algebra operations.
 - `NeuralNetwork.hpp/cpp`: Forward pass, backpropagation, and model I/O.
 - `DataLoader.hpp`: Handles MNIST CSV parsing and data normalization.
@@ -32,41 +35,72 @@ Trained on 60,000 images for 5 epochs:
 This implementation focuses on CPU efficiency and memory hierarchy awareness.
 
 ### 1. Cache Locality & Memory Layout
+
 Unlike a naive implementation using nested vectors (`std::vector<std::vector<double>>`), this project uses a **1.5D approach**:
-* All matrices are stored as a **single contiguous block of memory** (1D `std::vector`).
-* This layout ensures that when the CPU fetches a value, the subsequent values are likely already in the **L1/L2 Cache**, drastically reducing **cache misses**.
-
-
+- All matrices are stored as a **single contiguous block of memory** (1D `std::vector`).
+- This layout ensures that when the CPU fetches a value, the subsequent values are likely already in the **L1/L2 Cache**, drastically reducing **cache misses**.
 
 ### 2. Matrix Multiplication Optimization
-The core GEMM (General Matrix Multiply) operations are implemented using the **`ikj` loop order**. 
-* Standard `ijk` multiplication causes non-sequential memory access in the second matrix.
-* The `ikj` variant allows for **stride-1 access patterns**, which is significantly more friendly to the CPU's prefetcher.
 
-## How to build and run
-Compile using any C++11 compliant compiler with `-O3` optimization for best performance:
+The core GEMM (General Matrix Multiply) operations are implemented using the **`ikj` loop order**.
+- Standard `ijk` multiplication causes non-sequential memory access in the second matrix.
+- The `ikj` variant allows for **stride-1 access patterns**, which is significantly more friendly to the CPU's prefetcher.
 
-```bash
-g++ -O3 Train_main.cpp NeuralNetwork.cpp -o train_mnist
-./train_mnist
-```
+## Build and Run (CMake)
+
+To achieve maximum performance, it is **essential** to compile the project in **Release** mode. This enables high-level compiler optimizations (like `-O3`) necessary for heavy matrix computations.
+
+### Prerequisites
+
+* CMake (version 3.10 or higher)
+- A C++17 compliant compiler (GCC, Clang, or MSVC)
+
+### Compilation Steps
+
+1. From the project root directory, create and enter a build folder:
+
+   ```bash
+   mkdir build
+   cd build
+   cmake -DCMAKE_BUILD_TYPE=Release ..
+   make
+    ```
+
+   After a successful build, the executables will be located in the build directory. To ensure the program finds the CSV datasets, run the commands from the project root:
+
+   ## To train the model
+
+   ```bash
+   ./build/train_nn
+   ```
+
+   ## To Run Test
+
+   ```bash
+   ./build/test_nn
+   ```
 
 ## Dataset
+
 The model is trained and evaluated using the **MNIST** (Modified National Institute of Standards and Technology) database of handwritten digits.
 
 ### Source
+
 The official dataset can be found at:
-* **Kaggle Website**: [https://www.kaggle.com/datasets/hojjatk/mnist-dataset)
-* **Alternative Mirror (OpenML)**: [mnist_784](https://www.openml.org/d/554)
+- **Kaggle Website**: [https://www.kaggle.com/datasets/hojjatk/mnist-dataset)
+- **Alternative Mirror (OpenML)**: [mnist_784](https://www.openml.org/d/554)
 
 ### Data Specifications
+
 * **Training Set**: 60,000 images
-* **Test Set**: 10,000 images
-* **Image Size**: 28x28 pixels (grayscale)
-* **Label Format**: Integer (0-9)
+- **Test Set**: 10,000 images
+- **Image Size**: 28x28 pixels (grayscale)
+- **Label Format**: Integer (0-9)
 
 ### Data Preprocessing
+
 To ensure optimal performance and avoid vanishing gradients during the backpropagation:
-1.  **Flattening**: Each 28x28 matrix is converted into a $1 \times 784$ vector.
-2.  **Normalization**: Pixel values are scaled from $[0, 255]$ to $[0, 1]$ using:
+
+1. **Flattening**: Each 28x28 matrix is converted into a $1 \times 784$ vector.
+2. **Normalization**: Pixel values are scaled from $[0, 255]$ to $[0, 1]$ using:
     $$x_{norm} = \frac{x}{255.0}$$
