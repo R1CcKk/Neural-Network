@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
-#include "../include/NeuralNetwork.hpp"
-#include "../include/DataLoader.hpp"
+#include "NeuralNetwork.hpp"
+#include "DataLoader.hpp"
 
 int main()
 {
