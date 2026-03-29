@@ -12,7 +12,6 @@ int main()
     std::cout << "Loading model from binary file..." << std::endl;
     nn.loadModel("mnist_model.bin");
 
-    // Load test dataset (10,000 images)
     std::vector<DataPoint> testData = DataLoader::loadMNISTCsv("mnist_test.csv");
     if (testData.empty())
         return 1;

@@ -102,6 +102,8 @@ public:
             throw std::invalid_argument("Dimension mismatch for multiplication.");
 
         Matrix<T> result(m_rows, other.m_cols);
+
+        #pragma omp parallel for 
         for (int i = 0; i < m_rows; ++i)
         {
             for (int k = 0; k < m_cols; ++k)

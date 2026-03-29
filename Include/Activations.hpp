@@ -32,7 +32,7 @@ namespace Activation
     }
 
     // --- Softmax ---
-    template <typename T>
+    // template <typename T>
     inline void softmax(Matrix<double> &m)
     {
         // Find the maximum value to ensure numerical stability.

@@ -33,7 +33,8 @@ Matrix<double> NeuralNetwork::forward(const Matrix<double> &input)
 
         if (i == m_weights.size() - 1)
         {
-            activation = z.apply(Activation::sigmoid);
+            activation = z;
+            Activation::softmax(activation);
         }
         else
         {
