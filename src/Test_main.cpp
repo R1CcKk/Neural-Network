@@ -12,7 +12,7 @@ int main()
     std::cout << "Loading model from binary file..." << std::endl;
     nn.loadModel("mnist_model.bin");
 
-    std::vector<DataPoint> testData = DataLoader::loadMNISTCsv("mnist_test.csv");
+    std::vector<DataPoint> testData = DataLoader::loadMNISTCsv("../mnist_test.csv");
     if (testData.empty())
         return 1;
 

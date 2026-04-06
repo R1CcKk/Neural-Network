@@ -28,7 +28,7 @@ Matrix<double> NeuralNetwork::forward(const Matrix<double> &input)
 
     for (size_t i = 0; i < m_weights.size(); ++i)
     {
-        Matrix<double> z = m_weights[i] * activation + m_biases[i];
+        Matrix<double> z = (m_weights[i] * activation).addBias(m_biases[i]);
         m_zValues.push_back(z);
 
         if (i == m_weights.size() - 1)

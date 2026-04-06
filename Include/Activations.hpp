@@ -38,25 +38,45 @@ namespace Activation
         // Find the maximum value to ensure numerical stability.
         // Subtracting maxVal prevents std::exp() from generating overflow (infinity)
         // for large input values, without altering the final probability distribution.
-        double maxVal = m(0, 0);
-        for (int i = 1; i < m.getRows(); ++i)
-        {
-            if (m(i, 0) > maxVal)
+        // double maxVal = m(0, 0);
+        // for (int i = 1; i < m.getRows(); ++i)
+        // {
+        //     if (m(i, 0) > maxVal)
+        //     {
+        //         maxVal = m(i, 0);
+        //     }
+        // }
+
+        // double sumExp = 0.0;
+        // for (int i = 0; i < m.getRows(); ++i)
+        // {
+        //     m(i, 0) = std::exp(m(i, 0) - maxVal);
+        //     sumExp += m(i, 0);
+        // }
+
+        // for (int i = 0; i < m.getRows(); ++i)
+        // {
+        //     m(i, 0) /= sumExp;
+        // }
+        for(int j = 0; j < m.getCols(); ++j){
+            double maxVal = m(0,j);
+            for(int i = 1; i < m.getRows(); ++i)
             {
-                maxVal = m(i, 0);
+                if (m(i, j) > maxVal)
+                {
+                    maxVal = m(i, j);
+                }
             }
-        }
-
-        double sumExp = 0.0;
-        for (int i = 0; i < m.getRows(); ++i)
-        {
-            m(i, 0) = std::exp(m(i, 0) - maxVal);
-            sumExp += m(i, 0);
-        }
-
-        for (int i = 0; i < m.getRows(); ++i)
-        {
-            m(i, 0) /= sumExp;
+            double sumExp = 0.0;
+            for(int i = 0; i < m.getRows(); ++i)
+            {
+                m(i, j) = std::exp(m(i, j) - maxVal);
+                sumExp += m(i, j);
+            }
+            for(int i = 0; i < m.getRows(); ++i)
+            {
+                m(i, j) /= sumExp;
+            }
         }
     }
 }

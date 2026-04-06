@@ -206,17 +206,31 @@ public:
      * Scales the initial random weights based on the matrix dimensions
      * to prevent initial gradients from vanishing or exploding.
      */
+    // void randomize()
+    // {
+    //     std::random_device rd;
+    //     std::mt19937 gen(rd());
+    //     double limit = std::sqrt(6.0 / (m_rows + m_cols));
+    //     std::uniform_real_distribution<> dis(-limit, limit);
+
+    //     for (int i = 0; i < m_rows * m_cols; ++i)
+    //     {
+    //         m_data[i] = dis(gen);
+    //     }
+    // }
+
+    /// @brief He Initialization.
+    // Scales the initial random weights based on the number of input neurons to prevent vanishing/exploding gradients, 
+    //especially when using ReLU activations.
     void randomize()
     {
         std::random_device rd;
         std::mt19937 gen(rd());
-        double limit = std::sqrt(6.0 / (m_rows + m_cols));
-        std::uniform_real_distribution<> dis(-limit, limit);
+        double stddev = std::sqrt(2.0 / m_rows); 
+        std::normal_distribution<double> dis(0.0, stddev);
 
         for (int i = 0; i < m_rows * m_cols; ++i)
-        {
             m_data[i] = dis(gen);
-        }
     }
 
     /**
@@ -239,6 +253,18 @@ public:
         in.read(reinterpret_cast<char *>(&m_cols), sizeof(m_cols));
         m_data.resize(m_rows * m_cols);
         in.read(reinterpret_cast<char *>(m_data.data()), m_data.size() * sizeof(T));
+    }
+
+    Matrix<T> addBias(const Matrix<T> &bias) const
+    {
+        if (m_rows != bias.getRows() || bias.getCols() != 1)
+            throw std::invalid_argument("Bias must be a column vector with matching rows.");
+
+        Matrix<T> result(m_rows, m_cols);
+        for (int i = 0; i < m_rows; ++i)
+            for (int j = 0; j < m_cols; ++j)
+                result(i, j) = (*this)(i, j) + bias(i, 0);
+        return result;
     }
 };
 

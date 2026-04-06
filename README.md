@@ -4,103 +4,91 @@ This project implements a Feedforward Neural Network (Multilayer Perceptron) to 
 
 ## Technical Highlights
 
-- **Cache-Friendly Linear Algebra**: Used a custom Matrix class with 1D array storage to ensure contiguous memory access. Matrix multiplication is optimized using an `ikj` loop order to minimize CPU cache misses.
-- **Custom Binary Serialization**: Implemented a raw binary format for saving and loading the model, bypassing the overhead of CSV/text parsing.
-- **Numerical Stability**: Included a Softmax implementation with a max-subtraction trick to prevent floating-point overflow.
-- **Modular Design**: Separated data loading, mathematical operations, and network logic into distinct modules.
+- **Cache-Friendly Linear Algebra**: Custom `Matrix` class with 1D contiguous array storage maximizing L1/L2 cache locality. Matrix multiplication uses an `ikj` loop order to minimize CPU cache misses.
+- **Mini-Batch Gradient Descent**: Training uses mini-batches of configurable size (default: 64), averaging gradients over the batch for more stable convergence.
+- **Bias Broadcasting**: Custom `addBias()` method on `Matrix` broadcasts a `(n, 1)` bias vector across all columns of a `(n, batchSize)` activation matrix during the forward pass.
+- **Column-wise Softmax**: Output layer softmax normalized independently per column (per sample) for correctness with batched inputs.
+- **Custom Binary Serialization**: Raw binary format for saving and loading the trained model, bypassing CSV/text parsing overhead.
+- **Numerical Stability**: Softmax uses a per-column max-subtraction trick to prevent floating-point overflow.
+- **Modular Design**: Data loading, linear algebra, activations, and network logic are separated into distinct modules.
 
 ## Model Architecture
 
-- **Input Layer**: 784 neurons (28x28 pixels).
+- **Input Layer**: 784 neurons (28×28 pixels, flattened and normalized to [0, 1]).
 - **Hidden Layer**: 128 neurons with **ReLU** activation.
-- **Output Layer**: 10 neurons with **Softmax** activation (representing digits 0-9).
-- **Optimization**: Stochastic Gradient Descent (SGD) with Xavier Initialization.
+- **Output Layer**: 10 neurons with **Softmax** activation (representing digits 0–9).
+- **Optimization**: Mini-Batch Gradient Descent with **He initialization** (suited for ReLU).
+- **Batch Size**: 64 samples per update step.
+- **Shuffle**: Training indices are shuffled at the start of every epoch to prevent ordering bias.
 
 ## Performance
 
-Trained on 60,000 images for 5 epochs:
+Trained on 60,000 images for 30 epochs with batch size 64 and learning rate 0.01:
 
-- **Final Training Accuracy**: 98.88%
-- **Final Test Accuracy (Inference)**: 97.65%
+| Epoch | Training Accuracy |
+|-------|------------------|
+| 1     | 90.30%           |
+| 5     | 97.50%           |
+| 10    | 98.78%           |
+| 15    | 99.34%           |
+| 20    | 99.68%           |
+| 25    | 99.84%           |
+| 30    | 99.91%           |
 
-## Project Structure
-
-- `Matrix.hpp`: Core linear algebra operations.
-- `NeuralNetwork.hpp/cpp`: Forward pass, backpropagation, and model I/O.
-- `DataLoader.hpp`: Handles MNIST CSV parsing and data normalization.
-- `Activations.hpp`: ReLU, Sigmoid, and Softmax functions.
-
-## Performance & Optimization Notes
-
-This implementation focuses on CPU efficiency and memory hierarchy awareness.
-
-### 1. Cache Locality & Memory Layout
-
-Unlike a naive implementation using nested vectors (`std::vector<std::vector<double>>`), this project uses a **1.5D approach**:
-- All matrices are stored as a **single contiguous block of memory** (1D `std::vector`).
-- This layout ensures that when the CPU fetches a value, the subsequent values are likely already in the **L1/L2 Cache**, drastically reducing **cache misses**.
-
-### 2. Matrix Multiplication Optimization
-
-The core GEMM (General Matrix Multiply) operations are implemented using the **`ikj` loop order**.
-- Standard `ijk` multiplication causes non-sequential memory access in the second matrix.
-- The `ikj` variant allows for **stride-1 access patterns**, which is significantly more friendly to the CPU's prefetcher.
+> Previous SGD baseline (5 epochs): 98.88% training accuracy, 97.65% test accuracy.
 
 ## Build and Run (CMake)
 
-To achieve maximum performance, it is **essential** to compile the project in **Release** mode. This enables high-level compiler optimizations (like `-O3`) necessary for heavy matrix computations.
+Compile in **Release** mode to enable `-O3` optimizations, which are essential for matrix-heavy workloads.
 
-### Prerequisites
-
-* CMake (version 3.10 or higher)
-- A C++17 compliant compiler (GCC, Clang, or MSVC)
-
-### Compilation Steps
-
-1. From the project root directory, create and enter a build folder:
-
-   ```bash
-   mkdir build
-   cd build
-   cmake -DCMAKE_BUILD_TYPE=Release ..
-   make
-    ```
-
-   After a successful build, the executables will be located in the build directory. To ensure the program finds the CSV datasets, run the commands from the project root:
-
-   ## To train the model
-
-   ```bash
-   ./build/train_nn
-   ```
-
-   ## To Run Test
-
-   ```bash
-   ./build/test_nn
-   ```
+```bash
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```
 
 ## Dataset
 
-The model is trained and evaluated using the **MNIST** (Modified National Institute of Standards and Technology) database of handwritten digits.
+The model is trained and evaluated on the **MNIST** database of handwritten digits.
 
-### Source
-
-The official dataset can be found at:
-- **Kaggle Website**: [https://www.kaggle.com/datasets/hojjatk/mnist-dataset)
-- **Alternative Mirror (OpenML)**: [mnist_784](https://www.openml.org/d/554)
-
-### Data Specifications
-
-* **Training Set**: 60,000 images
+- **Training Set**: 60,000 images
 - **Test Set**: 10,000 images
-- **Image Size**: 28x28 pixels (grayscale)
-- **Label Format**: Integer (0-9)
+- **Image Size**: 28×28 pixels (grayscale, flattened to 784 values)
+- **Label Format**: Integer (0–9), one-hot encoded as target vector
 
-### Data Preprocessing
+**Sources:**
 
-To ensure optimal performance and avoid vanishing gradients during the backpropagation:
+- [Kaggle — MNIST Dataset](https://www.kaggle.com/datasets/hojjatk/mnist-dataset)
+- [OpenML — mnist_784](https://www.openml.org/d/554)
 
-1. **Flattening**: Each 28x28 matrix is converted into a $1 \times 784$ vector.
-2. **Normalization**: Pixel values are scaled from $[0, 255]$ to $[0, 1]$ using:
-    $$x_{norm} = \frac{x}{255.0}$$
+### Preprocessing
+
+1. **Flattening**: Each 28×28 image is converted to a 784-element column vector.
+2. **Normalization**: Pixel values scaled from [0, 255] to [0, 1]:
+
+$$x_{\text{norm}} = \frac{x}{255.0}$$
+
+## Performance & Optimization Notes
+
+### Cache Locality & Memory Layout
+
+All matrices use a **single contiguous 1D `std::vector<double>`** internally. Row-major indexing maps `(i, j)` to `i * cols + j`, ensuring sequential memory access during the innermost loop of matrix multiplication.
+
+### Matrix Multiplication (`ikj` loop order)
+
+Standard `ijk` multiplication accesses the second matrix column-by-column (non-sequential). The `ikj` variant hoists `A(i,k)` into a scalar `tmp` and accesses `B` row-by-row (sequential), enabling the CPU prefetcher to work efficiently:
+
+```cpp
+for (int i = 0; i < m_rows; ++i)
+    for (int k = 0; k < m_cols; ++k)
+    {
+        T tmp = (*this)(i, k);
+        for (int j = 0; j < other.m_cols; ++j)
+            result(i, j) += tmp * other(k, j);
+    }
+```
+
+### OpenMP Parallelism
+
+The outer loop of matrix multiplication is parallelized with `#pragma omp parallel for`, distributing rows across CPU cores. The CMake build links OpenMP automatically.

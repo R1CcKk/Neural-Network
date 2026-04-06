@@ -10,7 +10,7 @@ int main()
     NeuralNetwork nn(topology);
 
     double learningRate = 0.01;
-    int epochs = 5;
+    int epochs = 10;
 
     // Load data using the static method from DataLoader class
     std::vector<DataPoint> trainData = DataLoader::loadMNISTCsv("mnist_train.csv");
