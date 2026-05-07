@@ -92,3 +92,4 @@ for (int i = 0; i < m_rows; ++i)
 ### OpenMP Parallelism
 
 The outer loop of matrix multiplication is parallelized with `#pragma omp parallel for`, distributing rows across CPU cores. The CMake build links OpenMP automatically.
+TODO Cuda implementation
