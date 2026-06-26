@@ -1,3 +1,4 @@
+This project has as its sole aim that of learning and personal improvement.
 # MNIST Multilayer Perceptron from Scratch (C++)
 
 This project implements a Feedforward Neural Network (Multilayer Perceptron) to classify handwritten digits from the MNIST dataset. The entire engine is written in pure C++ without any external machine learning libraries.
